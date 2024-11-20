@@ -1,35 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Papa from 'papaparse';
-import "./App.css"
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Papa from "papaparse";
+import "./App.css";
 
 const CreditCardDropdown = () => {
   const [creditCards, setCreditCards] = useState([]);
-  const [selectedCard, setSelectedCard] = useState('');
+  const [filteredCreditCards, setFilteredCreditCards] = useState([]);
+  const [query, setQuery] = useState("");
+  const [selectedCard, setSelectedCard] = useState("");
   const [pvrOffers, setPvrOffers] = useState([]);
   const [inoxOffers, setInoxOffers] = useState([]);
   const [bookMyShowOffers, setBookMyShowOffers] = useState([]);
   const [showTermsIndex, setShowTermsIndex] = useState(null);
-  const [selectedOfferDetails, setSelectedOfferDetails] = useState('');
+  const [selectedOfferDetails, setSelectedOfferDetails] = useState("");
 
   useEffect(() => {
     const fetchCSVData = async () => {
       try {
         const files = [
-          { name: 'Pvr final.csv', setter: setPvrOffers },
-          { name: 'Inox final.csv', setter: setInoxOffers },
-          { name: 'Book My Show final.csv', setter: setBookMyShowOffers },
+          { name: "Pvr final.csv", setter: setPvrOffers },
+          { name: "Inox final.csv", setter: setInoxOffers },
+          { name: "Book My Show final.csv", setter: setBookMyShowOffers },
         ];
-        
+
         let allCreditCards = new Set();
 
         for (let file of files) {
-          const response = await axios.get(`${process.env.PUBLIC_URL}/${file.name}`);
+          const response = await axios.get(`/${file.name}`);
           const parsedData = Papa.parse(response.data, { header: true });
-          
+
           parsedData.data.forEach((row) => {
-            if (row['Credit Card']) {
-              allCreditCards.add(row['Credit Card'].trim());
+            if (row["Credit Card"]) {
+              allCreditCards.add(row["Credit Card"].trim());
             }
           });
 
@@ -37,24 +39,39 @@ const CreditCardDropdown = () => {
         }
 
         setCreditCards(Array.from(allCreditCards).sort());
+        setFilteredCreditCards(Array.from(allCreditCards).sort());
       } catch (error) {
-        console.error('Error loading CSV data:', error);
+        console.error("Error loading CSV data:", error);
       }
     };
 
     fetchCSVData();
   }, []);
 
-  const getOffersForSelectedCard = (offers) => {
-    return offers.filter(
-      (offer) => offer['Credit Card'] && offer['Credit Card'].trim() === selectedCard
-    );
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    setQuery(value);
+
+    if (value) {
+      const filtered = creditCards.filter((card) =>
+        card.toLowerCase().startsWith(value.toLowerCase())
+      );
+      setFilteredCreditCards(filtered);
+    } else {
+      setFilteredCreditCards([]);
+    }
   };
 
-  const handleSelectionChange = (event) => {
-    const cardName = event.target.value;
-    setSelectedCard(cardName);
-    setShowTermsIndex(null); 
+  const handleCardSelection = (card) => {
+    setSelectedCard(card);
+    setQuery(card);
+    setFilteredCreditCards([]);
+  };
+
+  const getOffersForSelectedCard = (offers) => {
+    return offers.filter(
+      (offer) => offer["Credit Card"] && offer["Credit Card"].trim() === selectedCard
+    );
   };
 
   const openTermsOverlay = (offerDetails, index) => {
@@ -64,7 +81,7 @@ const CreditCardDropdown = () => {
 
   const closeTermsOverlay = () => {
     setShowTermsIndex(null);
-    setSelectedOfferDetails('');
+    setSelectedOfferDetails("");
   };
 
   const selectedPvrOffers = getOffersForSelectedCard(pvrOffers);
@@ -72,30 +89,75 @@ const CreditCardDropdown = () => {
   const selectedBookMyShowOffers = getOffersForSelectedCard(bookMyShowOffers);
 
   return (
-    <div>
-      <label htmlFor="creditCardDropdown"><h1>Credit Card</h1></label>
-      <select
-        id="creditCardDropdown"
-        value={selectedCard}
-        onChange={handleSelectionChange}
-      >
-        <option value="">-- Select a Credit Card --</option>
-        {creditCards.map((card, index) => (
-          <option key={index} value={card}>
-            {card}
-          </option>
-        ))}
-      </select>
+    <div  className="App">
+      <h1>Movies Offers</h1>
+      <div style={{ position: "relative", width: "600px", margin: "0 auto" }}>
+        <input
+          type="text"
+          value={query}
+          onChange={handleInputChange}
+          placeholder="Type a Credit Card..."
+          style={{
+            width: "100%",
+            padding: "12px",
+            fontSize: "16px",
+            border: "1px solid #ccc",
+            borderRadius: "5px",
+          }}
+        />
+        {filteredCreditCards.length > 0 && (
+          <ul
+            style={{
+              listStyleType: "none",
+              padding: "10px",
+              margin: 0,
+              width: "100%",
+              maxHeight: "200px",
+              overflowY: "auto",
+              border: "1px solid #ccc",
+              borderRadius: "5px",
+              backgroundColor: "#fff",
+              position: "absolute",
+              zIndex: 1000,
+            }}
+          >
+            {filteredCreditCards.map((card, index) => (
+              <li
+                key={index}
+                onClick={() => handleCardSelection(card)}
+                style={{
+                  padding: "10px",
+                  cursor: "pointer",
+                  borderBottom:
+                    index !== filteredCreditCards.length - 1
+                      ? "1px solid #eee"
+                      : "none",
+                }}
+                onMouseOver={(e) =>
+                  (e.target.style.backgroundColor = "#f0f0f0")
+                }
+                onMouseOut={(e) =>
+                  (e.target.style.backgroundColor = "transparent")
+                }
+              >
+                {card}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
-      {/* Display PVR Offers only if offers exist for the selected card */}
+      {/* Display Offers */}
       {selectedCard && selectedPvrOffers.length > 0 && (
         <div>
           <h2>PVR Offers</h2>
           {selectedPvrOffers.map((offer, index) => (
-            <div key={index} style={{ border: '1px solid #ccc', padding: '16px', margin: '16px 0' }}>
-              <img src={offer.Image} alt={offer.Title} style={{ width: '200px' }} />
+            <div key={index} className="offer-card">
+              <img src={offer.Image} alt={offer.Title} style={{ width: "200px", height: "150px"}} />
               <h3>{offer.Title}</h3>
-              <p><strong>Validity:</strong> {offer.Validity}</p>
+              <p>
+                <strong>Validity:</strong> {offer.Validity}
+              </p>
               <button onClick={() => openTermsOverlay(offer.Offers, index)}>
                 Click For More Details
               </button>
@@ -104,15 +166,16 @@ const CreditCardDropdown = () => {
         </div>
       )}
 
-      {/* Display Inox Offers only if offers exist for the selected card */}
       {selectedCard && selectedInoxOffers.length > 0 && (
         <div>
           <h2>Inox Offers</h2>
           {selectedInoxOffers.map((offer, index) => (
-            <div key={index} style={{ border: '1px solid #ccc', padding: '16px', margin: '16px 0' }}>
-              <img src={offer.Image} alt={offer.Title} style={{ width: '200px' }} />
+            <div key={index} className="offer-card">
+              <img src={offer.Image} alt={offer.Title} style={{ width: "200px",  height: "150px" }} />
               <h3>{offer.Title}</h3>
-              <p><strong>Validity:</strong> {offer.Validity}</p>
+              <p>
+                <strong>Validity:</strong> {offer.Validity}
+              </p>
               <button onClick={() => openTermsOverlay(offer.Offers, index)}>
                 Click For More Details
               </button>
@@ -121,17 +184,20 @@ const CreditCardDropdown = () => {
         </div>
       )}
 
-      {/* Display Book My Show Offers only if offers exist for the selected card */}
       {selectedCard && selectedBookMyShowOffers.length > 0 && (
         <div>
           <h2>Book My Show Offers</h2>
           {selectedBookMyShowOffers.map((offer, index) => (
-            <div key={index} style={{ border: '1px solid #ccc', padding: '16px', margin: '16px 0' }}>
-              <img src={offer.Image} alt={offer.Title} style={{ width: '200px' }} />
+            <div key={index} className="offer-card">
+              <img src={offer.Image} alt={offer.Title} style={{ width: "200px",  height: "150px" }} />
               <h3>{offer.Title}</h3>
-              <p><strong>Offer:</strong> {offer.Offer}</p>
-              <p><strong>Validity:</strong> {offer.Validity}</p>
-              <button onClick={() => window.open(offer.Link, '_blank')}>
+              <p>
+                <strong>Offer:</strong> {offer.Offer}
+              </p>
+              <p>
+                <strong>Validity:</strong> {offer.Validity}
+              </p>
+              <button onClick={() => window.open(offer.Link, "_blank")}>
                 Click For More Details
               </button>
             </div>
@@ -139,54 +205,58 @@ const CreditCardDropdown = () => {
         </div>
       )}
 
-      {/* Terms & Conditions Modal Overlay */}
+      {/* Terms Modal */}
       {showTermsIndex !== null && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: '#fff',
-            padding: '20px',
-            borderRadius: '8px',
-            width: '80%',
-            maxWidth: '700px',
-            height: '300px',
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-          }}>
-            {/* Non-scrollable close button */}
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "20px",
+              borderRadius: "8px",
+              width: "80%",
+              maxWidth: "700px",
+              height: "300px",
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
             <button
               onClick={closeTermsOverlay}
               style={{
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                background: 'none',
-                border: 'none',
-                fontSize: '20px',
-                cursor: 'pointer',
-                zIndex: 1001
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                background: "none",
+                border: "none",
+                fontSize: "20px",
+                cursor: "pointer",
+                zIndex: 1001,
               }}
             >
               &times;
             </button>
-            {/* Scrollable content */}
-            <div style={{
-              overflowY: 'auto',
-              paddingRight: '10px',
-              marginTop: '40px', // Provides space below the button
-              flex: 1
-            }}>
+            <div
+              style={{
+                overflowY: "auto",
+                paddingRight: "10px",
+                marginTop: "40px",
+                flex: 1,
+              }}
+            >
               <h3>Terms & Conditions</h3>
               <p>{selectedOfferDetails}</p>
             </div>
