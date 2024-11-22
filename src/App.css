@@ -126,6 +126,7 @@ h1 {
   .offer-row {
     flex-direction: column;
     gap: 20px; /* Space between cards */
+    align-items: center;
   }
 
   .offer-card {
