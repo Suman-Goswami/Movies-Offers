@@ -89,9 +89,9 @@ const CreditCardDropdown = () => {
   const selectedBookMyShowOffers = getOffersForSelectedCard(bookMyShowOffers);
 
   return (
-    <div  className="App">
+    <div className="App">
       <h1>Movies Offers</h1>
-      <div style={{ position: "relative", width: "600px", margin: "0 auto" }}>
+      <div className="creditCardDropdown" style={{ position: "relative", width: "600px", margin: "0 auto" }}>
         <input
           type="text"
           value={query}
@@ -146,14 +146,16 @@ const CreditCardDropdown = () => {
           </ul>
         )}
       </div>
-
-      {/* Display Offers */}
-      {selectedCard && selectedPvrOffers.length > 0 && (
-        <div>
-          <h2>PVR Offers</h2>
+{/* Display Offers */}
+{selectedCard && (
+  <div className="offer-section">
+    {selectedPvrOffers.length > 0 && (
+      <div className="offer-container">
+        <h2>PVR Offers</h2>
+        <div className="offer-row">
           {selectedPvrOffers.map((offer, index) => (
             <div key={index} className="offer-card">
-              <img src={offer.Image} alt={offer.Title} style={{ width: "200px", height: "150px"}} />
+              <img src={offer.Image} alt={offer.Title} />
               <h3>{offer.Title}</h3>
               <p>
                 <strong>Validity:</strong> {offer.Validity}
@@ -164,14 +166,16 @@ const CreditCardDropdown = () => {
             </div>
           ))}
         </div>
-      )}
+      </div>
+    )}
 
-      {selectedCard && selectedInoxOffers.length > 0 && (
-        <div>
-          <h2>Inox Offers</h2>
+    {selectedInoxOffers.length > 0 && (
+      <div className="offer-container">
+        <h2>Inox Offers</h2>
+        <div className="offer-row">
           {selectedInoxOffers.map((offer, index) => (
             <div key={index} className="offer-card">
-              <img src={offer.Image} alt={offer.Title} style={{ width: "200px",  height: "150px" }} />
+              <img src={offer.Image} alt={offer.Title} />
               <h3>{offer.Title}</h3>
               <p>
                 <strong>Validity:</strong> {offer.Validity}
@@ -182,14 +186,16 @@ const CreditCardDropdown = () => {
             </div>
           ))}
         </div>
-      )}
+      </div>
+    )}
 
-      {selectedCard && selectedBookMyShowOffers.length > 0 && (
-        <div>
-          <h2>Book My Show Offers</h2>
+    {selectedBookMyShowOffers.length > 0 && (
+      <div className="offer-container">
+        <h2>Book My Show Offers</h2>
+        <div className="offer-row">
           {selectedBookMyShowOffers.map((offer, index) => (
             <div key={index} className="offer-card">
-              <img src={offer.Image} alt={offer.Title} style={{ width: "200px",  height: "150px" }} />
+              <img src={offer.Image} alt={offer.Title} />
               <h3>{offer.Title}</h3>
               <p>
                 <strong>Offer:</strong> {offer.Offer}
@@ -203,7 +209,11 @@ const CreditCardDropdown = () => {
             </div>
           ))}
         </div>
-      )}
+      </div>
+    )}
+  </div>
+)}
+
 
       {/* Terms Modal */}
       {showTermsIndex !== null && (

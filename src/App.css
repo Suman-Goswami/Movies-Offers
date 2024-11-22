@@ -16,170 +16,154 @@ h1 {
   text-align: center;
 }
 
-/* Dropdown container styling */
-#creditCardDropdown {
-  width: 100%;
+.offer-row {
   display: flex;
-  max-width: 500px;
-  margin: 20px auto;
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #fff;
+  flex-wrap: wrap;
+  gap: 30px; /* Adjust spacing between cards */
+  margin: 20px 0;
 }
 
-/* Card container styling */
-.card-container {
-  margin: 20px auto;
-  max-width: full;
-  padding: 16px;
-}
-
- h2 {
-  font-size: 30px;
-  margin-bottom: 20px;
-  color: #333;
-  text-align: left;
-}
-
-/* Card styling */
-.offer-card { 
-  background-color: #d2e4e7;
-  border: 2px solid black;
+.offer-card {
+  flex: 0 1 calc(33.33% - 20px); /* 3 cards per row */
+  background-color: #d2e4c7;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 20px;
-  text-align: left;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-  margin-bottom: 20px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 300px;
+  margin-left: 60px;
 }
 
-.card img {
-  width: 100%;
-  max-width: 120px;
+.offer-card img {
+  width: 300px;
   height: auto;
-  border-radius: 8px;
-  object-fit: cover;
-  margin-bottom: 15px;
+  border-radius: 5px;
 }
 
-.card-info {
+.offer-card button {
   margin-top: 10px;
-  gap: 10px;
-}
-
-.card-info h3 {
-  font-size: 18px;
-  margin-top: 5px;
-}
-
-.card-info p {
-  margin-top: 5px;
-}
-
-/* View For More Details button styling */
-button {
-  background-color: #007bff;
-  color: #fff;
   padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
+  font-size: 14px;
 }
 
-button:hover {
+.offer-card button:hover {
   background-color: #0056b3;
 }
 
-/* Terms & Conditions Modal Overlay */
-.terms-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+/* Offer Section Styling */
+.offer-container {
+  margin: 30px 0;
+  gap: 20px; /* Space between cards */
+  margin-left: 50px;
 }
 
-.terms-overlay .modal-content {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  width: 80%;
-  max-width: 700px;
-  height: 300px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
+/* Heading Styling */
+.offer-container h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  text-align: center; /* Centers the text */
 }
 
-.terms-overlay button.close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
+/* Grid for Cards */
+.offer-container .offer-grid {
+  gap: 20px; /* Space between cards */
+  padding: 0 20px; /* Add padding for smaller screens */
+  display: flex;
+  align-items: center; /* Centers the heading and cards */
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+.offer-card h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 10px 0;
+  text-align: center;
+}
+
+.offer-card p {
+  font-size: 0.9rem;
+  color: #555;
+  text-align: center;
+}
+
+.offer-card button {
+  background-color: #4caf50;
+  color: #fff;
+  padding: 10px 15px;
   border: none;
-  font-size: 20px;
+  border-radius: 5px;
   cursor: pointer;
-  z-index: 1001;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
 }
 
-.terms-overlay .modal-content .terms-content {
-  overflow-y: auto;
-  padding-right: 10px;
-  margin-top: 40px;
-  flex: 1;
+.offer-card button:hover {
+  background-color: #0056b3;
 }
 
-.terms-overlay .modal-content h3 {
-  margin-bottom: 10px;
-}
-
-.terms-overlay .modal-content p {
-  font-size: 14px;
-  color: #333;
-}
-
-/* Responsive styles */
-@media (min-width: 480px) {
-  /* Show two cards in a row for small screens */
-  .card-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-}
-
-@media (min-width: 600px) {
-  .card {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+/* Responsive Styling */
+@media (max-width: 768px) {
+  /* Adjust the input box and dropdown for mobile */
+  .creditCardDropdown {
+    max-width: 90%;
+    
   }
 
-  .card img {
-    margin-right: 20px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .card-container {
-    grid-template-columns: repeat(3, 1fr);
+  input[type="text"] {
+    width: 90%;
+    font-size: 14px;
+    
   }
 
-  .card {
+  /* Offer Cards: Show one card per row */
+  .offer-row {
     flex-direction: column;
-    text-align: center;
+    gap: 20px; /* Space between cards */
   }
 
-  .card img {
-    margin: 0 auto 15px auto;
+  .offer-card {
+    flex: 0 1 100%; /* Display one card at a time */
+    max-width: none;
+    background-color: #d2e4c7;
+    margin-left: 0;
+  }
+
+  /* Adjust offer card images */
+  .offer-card img {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Adjust heading size */
+  .offer-container h2 {
+    font-size: 24px;
+  }
+
+  /* Adjust text inside offer cards */
+  .offer-card h3 {
+    font-size: 1rem;
+  }
+
+  .offer-card p {
+    font-size: 0.8rem;
+  }
+
+  .offer-card button {
+    font-size: 12px;
+    padding: 8px 16px;
+  }
+
+  /* Adjust the offer section layout */
+  .offer-container {
+    margin-left: 0;
+    padding: 0 10px;
   }
 }
+
