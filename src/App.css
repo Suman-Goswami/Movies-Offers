@@ -130,7 +130,7 @@ h1 {
 
   .offer-card {
     flex: 0 1 100%; /* Display one card at a time */
-    max-width: none;
+    max-width: 70%;
     background-color: #d2e4c7;
     margin-left: 0;
   }
@@ -143,7 +143,7 @@ h1 {
 
   /* Adjust heading size */
   .offer-container h2 {
-    font-size: 24px;
+    font-size: 15px;
   }
 
   /* Adjust text inside offer cards */
