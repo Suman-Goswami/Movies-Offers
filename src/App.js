@@ -90,7 +90,7 @@ const CreditCardDropdown = () => {
 
   return (
     <div className="App">
-      <h1>Movies Offers</h1>
+      <h1>Movies Offers - Linked to your Credit Card</h1>
       <div className="creditCardDropdown" style={{ position: "relative", width: "600px", margin: "0 auto" }}>
         <input
           type="text"
