@@ -89,7 +89,7 @@ const CreditCardDropdown = () => {
   const selectedBookMyShowOffers = getOffersForSelectedCard(bookMyShowOffers);
 
   return (
-    <div className="App">
+    <div className="App" style={{ fontFamily: "'Libre Baskerville', serif" }}>
       <h1>Movies Offers - Linked to your Credit Card</h1>
       <div className="creditCardDropdown" style={{ position: "relative", width: "600px", margin: "0 auto" }}>
         <input
