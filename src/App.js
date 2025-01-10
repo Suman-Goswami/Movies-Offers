@@ -7,37 +7,24 @@ const CreditCardDropdown = () => {
   const [filteredCreditCards, setFilteredCreditCards] = useState([]);
   const [query, setQuery] = useState("");
   const [selectedCard, setSelectedCard] = useState("");
-  const [pvrOffers, setPvrOffers] = useState([]);
-  const [inoxOffers, setInoxOffers] = useState([]);
-  const [bookMyShowOffers, setBookMyShowOffers] = useState([]);
+  const [offers, setOffers] = useState([]);
   const [noOffersMessage, setNoOffersMessage] = useState(false);
 
   useEffect(() => {
     const fetchCSVData = async () => {
       try {
-        const files = [
-          { name: "Pvr final.csv", setter: setPvrOffers },
-          { name: "Inox final.csv", setter: setInoxOffers },
-          { name: "Book My Show final.csv", setter: setBookMyShowOffers },
-        ];
+        const response = await axios.get("/offers.csv");
+        const parsedData = Papa.parse(response.data, { header: true });
 
-        let allCreditCards = new Set();
+        const creditCardsSet = new Set();
+        parsedData.data.forEach((row) => {
+          if (row["Credit Card"]) {
+            creditCardsSet.add(row["Credit Card"].trim());
+          }
+        });
 
-        for (let file of files) {
-          const response = await axios.get(`/${file.name}`);
-          const parsedData = Papa.parse(response.data, { header: true });
-
-          parsedData.data.forEach((row) => {
-            if (row["Credit Card"]) {
-              allCreditCards.add(row["Credit Card"].trim());
-            }
-          });
-
-          file.setter(parsedData.data);
-        }
-
-        setCreditCards(Array.from(allCreditCards).sort());
-        setFilteredCreditCards(Array.from(allCreditCards).sort());
+        setCreditCards(Array.from(creditCardsSet).sort());
+        setOffers(parsedData.data);
       } catch (error) {
         console.error("Error loading CSV data:", error);
       }
@@ -56,11 +43,12 @@ const CreditCardDropdown = () => {
       );
       setFilteredCreditCards(filtered);
 
-      if (!filtered.includes(value.trim())) {
+      if (filtered.includes(value.trim())) {
+        setNoOffersMessage(false);
+        setSelectedCard(value.trim());
+      } else {
         setNoOffersMessage(true);
         setSelectedCard("");
-      } else {
-        setNoOffersMessage(false);
       }
     } else {
       setFilteredCreditCards([]);
@@ -70,21 +58,15 @@ const CreditCardDropdown = () => {
   };
 
   const handleCardSelection = (card) => {
-    setSelectedCard(card);
     setQuery(card);
+    setSelectedCard(card);
     setFilteredCreditCards([]);
     setNoOffersMessage(false);
   };
 
-  const getOffersForSelectedCard = (offers) => {
-    return offers.filter(
-      (offer) => offer["Credit Card"] && offer["Credit Card"].trim() === selectedCard
-    );
-  };
-
-  const selectedPvrOffers = getOffersForSelectedCard(pvrOffers);
-  const selectedInoxOffers = getOffersForSelectedCard(inoxOffers);
-  const selectedBookMyShowOffers = getOffersForSelectedCard(bookMyShowOffers);
+  const selectedOffers = offers.filter(
+    (offer) => offer["Credit Card"] === selectedCard
+  );
 
   return (
     <div className="App">
@@ -110,29 +92,15 @@ const CreditCardDropdown = () => {
       {/* Display Offers */}
       {selectedCard ? (
         <div className="offer-section">
-          {selectedPvrOffers.length > 0 && (
+          {selectedOffers.length > 0 ? (
             <div className="offer-container">
-              <h2>PVR Offers</h2>
-              {selectedPvrOffers.map((offer, index) => (
+              <h2>Offers for {selectedCard}</h2>
+              {selectedOffers.map((offer, index) => (
                 <p key={index}>{offer["Offer Details"]}</p>
               ))}
             </div>
-          )}
-          {selectedInoxOffers.length > 0 && (
-            <div className="offer-container">
-              <h2>Inox Offers</h2>
-              {selectedInoxOffers.map((offer, index) => (
-                <p key={index}>{offer["Offer Details"]}</p>
-              ))}
-            </div>
-          )}
-          {selectedBookMyShowOffers.length > 0 && (
-            <div className="offer-container">
-              <h2>Book My Show Offers</h2>
-              {selectedBookMyShowOffers.map((offer, index) => (
-                <p key={index}>{offer["Offer Details"]}</p>
-              ))}
-            </div>
+          ) : (
+            <p className="no-offers">No offers available for {selectedCard}</p>
           )}
         </div>
       ) : noOffersMessage ? (
