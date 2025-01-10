@@ -99,7 +99,7 @@ const CreditCardDropdown = () => {
       <h1>Movies Offers - Linked to your Credit Card</h1>
       <div
         className="creditCardDropdown"
-        style={{ position: "relative", width: "600px", margin: "0 auto" }}
+         style={{ position: "relative", width: "600px", margin: "0 auto" }}
       >
         <input
           type="text"
