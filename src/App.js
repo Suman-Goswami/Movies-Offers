@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Papa from "papaparse";
-import "./App.css";
 
 const CreditCardDropdown = () => {
   const [creditCards, setCreditCards] = useState([]);
@@ -11,8 +10,6 @@ const CreditCardDropdown = () => {
   const [pvrOffers, setPvrOffers] = useState([]);
   const [inoxOffers, setInoxOffers] = useState([]);
   const [bookMyShowOffers, setBookMyShowOffers] = useState([]);
-  const [showTermsIndex, setShowTermsIndex] = useState(null);
-  const [selectedOfferDetails, setSelectedOfferDetails] = useState("");
   const [noOffersMessage, setNoOffersMessage] = useState(false);
 
   useEffect(() => {
@@ -62,6 +59,8 @@ const CreditCardDropdown = () => {
       if (!filtered.includes(value.trim())) {
         setNoOffersMessage(true);
         setSelectedCard("");
+      } else {
+        setNoOffersMessage(false);
       }
     } else {
       setFilteredCreditCards([]);
@@ -83,72 +82,24 @@ const CreditCardDropdown = () => {
     );
   };
 
-  const openTermsOverlay = (offerDetails, index) => {
-    setSelectedOfferDetails(offerDetails);
-    setShowTermsIndex(index);
-  };
-
-  const closeTermsOverlay = () => {
-    setShowTermsIndex(null);
-    setSelectedOfferDetails("");
-  };
-
   const selectedPvrOffers = getOffersForSelectedCard(pvrOffers);
   const selectedInoxOffers = getOffersForSelectedCard(inoxOffers);
   const selectedBookMyShowOffers = getOffersForSelectedCard(bookMyShowOffers);
 
   return (
-    <div className="App" style={{ fontFamily: "'Libre Baskerville', serif" }}>
+    <div className="App">
       <h1>Movies Offers - Linked to your Credit Card</h1>
-      <div className="creditCardDropdown" style={{ position: "relative", width: "600px", margin: "0 auto" }}>
+      <div className="creditCardDropdown">
         <input
           type="text"
           value={query}
           onChange={handleInputChange}
           placeholder="Type a Credit Card..."
-          style={{
-            width: "100%",
-            padding: "12px",
-            fontSize: "16px",
-            border: "1px solid #ccc",
-            borderRadius: "5px",
-          }}
         />
         {filteredCreditCards.length > 0 && (
-          <ul
-            style={{
-              listStyleType: "none",
-              padding: "10px",
-              margin: 0,
-              width: "100%",
-              maxHeight: "200px",
-              overflowY: "auto",
-              border: "1px solid #ccc",
-              borderRadius: "5px",
-              backgroundColor: "#fff",
-              position: "absolute",
-              zIndex: 1000,
-            }}
-          >
+          <ul>
             {filteredCreditCards.map((card, index) => (
-              <li
-                key={index}
-                onClick={() => handleCardSelection(card)}
-                style={{
-                  padding: "10px",
-                  cursor: "pointer",
-                  borderBottom:
-                    index !== filteredCreditCards.length - 1
-                      ? "1px solid #eee"
-                      : "none",
-                }}
-                onMouseOver={(e) =>
-                  (e.target.style.backgroundColor = "#f0f0f0")
-                }
-                onMouseOut={(e) =>
-                  (e.target.style.backgroundColor = "transparent")
-                }
-              >
+              <li key={index} onClick={() => handleCardSelection(card)}>
                 {card}
               </li>
             ))}
@@ -162,86 +113,31 @@ const CreditCardDropdown = () => {
           {selectedPvrOffers.length > 0 && (
             <div className="offer-container">
               <h2>PVR Offers</h2>
-              {/* Offers rendering */}
+              {selectedPvrOffers.map((offer, index) => (
+                <p key={index}>{offer["Offer Details"]}</p>
+              ))}
             </div>
           )}
           {selectedInoxOffers.length > 0 && (
             <div className="offer-container">
               <h2>Inox Offers</h2>
-              {/* Offers rendering */}
+              {selectedInoxOffers.map((offer, index) => (
+                <p key={index}>{offer["Offer Details"]}</p>
+              ))}
             </div>
           )}
           {selectedBookMyShowOffers.length > 0 && (
             <div className="offer-container">
               <h2>Book My Show Offers</h2>
-              {/* Offers rendering */}
+              {selectedBookMyShowOffers.map((offer, index) => (
+                <p key={index}>{offer["Offer Details"]}</p>
+              ))}
             </div>
           )}
         </div>
       ) : noOffersMessage ? (
-        <p style={{ textAlign: "center", marginTop: "20px" }}>
-          No offers applicable at the moment
-        </p>
+        <p className="no-offers">No offers applicable at the moment</p>
       ) : null}
-
-      {/* Terms Modal */}
-      {showTermsIndex !== null && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "#fff",
-              padding: "20px",
-              borderRadius: "8px",
-              width: "80%",
-              maxWidth: "700px",
-              height: "300px",
-              position: "relative",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <button
-              onClick={closeTermsOverlay}
-              style={{
-                position: "absolute",
-                top: "10px",
-                right: "10px",
-                background: "none",
-                border: "none",
-                fontSize: "20px",
-                cursor: "pointer",
-                zIndex: 1001,
-              }}
-            >
-              &times;
-            </button>
-            <div
-              style={{
-                overflowY: "auto",
-                paddingRight: "10px",
-                marginTop: "40px",
-                flex: 1,
-              }}
-            >
-              <h3>Terms & Conditions</h3>
-              <p>{selectedOfferDetails}</p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
