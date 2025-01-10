@@ -13,7 +13,7 @@ const CreditCardDropdown = () => {
   const [bookMyShowOffers, setBookMyShowOffers] = useState([]);
   const [showTermsIndex, setShowTermsIndex] = useState(null);
   const [selectedOfferDetails, setSelectedOfferDetails] = useState("");
-  const [noOffers, setNoOffers] = useState(false);
+  const [noOffersMessage, setNoOffersMessage] = useState(false);
 
   useEffect(() => {
     const fetchCSVData = async () => {
@@ -58,8 +58,15 @@ const CreditCardDropdown = () => {
         card.toLowerCase().startsWith(value.toLowerCase())
       );
       setFilteredCreditCards(filtered);
+
+      if (!filtered.includes(value.trim())) {
+        setNoOffersMessage(true);
+        setSelectedCard("");
+      }
     } else {
       setFilteredCreditCards([]);
+      setNoOffersMessage(false);
+      setSelectedCard("");
     }
   };
 
@@ -67,22 +74,12 @@ const CreditCardDropdown = () => {
     setSelectedCard(card);
     setQuery(card);
     setFilteredCreditCards([]);
-
-    // Check if offers exist for the selected card
-    const pvr = getOffersForSelectedCard(pvrOffers, card);
-    const inox = getOffersForSelectedCard(inoxOffers, card);
-    const bms = getOffersForSelectedCard(bookMyShowOffers, card);
-
-    if (pvr.length === 0 && inox.length === 0 && bms.length === 0) {
-      setNoOffers(true);
-    } else {
-      setNoOffers(false);
-    }
+    setNoOffersMessage(false);
   };
 
-  const getOffersForSelectedCard = (offers, card) => {
+  const getOffersForSelectedCard = (offers) => {
     return offers.filter(
-      (offer) => offer["Credit Card"] && offer["Credit Card"].trim() === card
+      (offer) => offer["Credit Card"] && offer["Credit Card"].trim() === selectedCard
     );
   };
 
@@ -96,20 +93,14 @@ const CreditCardDropdown = () => {
     setSelectedOfferDetails("");
   };
 
-  const selectedPvrOffers = getOffersForSelectedCard(pvrOffers, selectedCard);
-  const selectedInoxOffers = getOffersForSelectedCard(inoxOffers, selectedCard);
-  const selectedBookMyShowOffers = getOffersForSelectedCard(
-    bookMyShowOffers,
-    selectedCard
-  );
+  const selectedPvrOffers = getOffersForSelectedCard(pvrOffers);
+  const selectedInoxOffers = getOffersForSelectedCard(inoxOffers);
+  const selectedBookMyShowOffers = getOffersForSelectedCard(bookMyShowOffers);
 
   return (
     <div className="App" style={{ fontFamily: "'Libre Baskerville', serif" }}>
       <h1>Movies Offers - Linked to your Credit Card</h1>
-      <div
-        className="creditCardDropdown"
-        style={{ position: "relative", width: "600px", margin: "0 auto" }}
-      >
+      <div className="creditCardDropdown" style={{ position: "relative", width: "600px", margin: "0 auto" }}>
         <input
           type="text"
           value={query}
@@ -165,35 +156,33 @@ const CreditCardDropdown = () => {
         )}
       </div>
 
-      {selectedCard && noOffers ? (
-        <p>No offers applicable at the moment</p>
-      ) : (
+      {/* Display Offers */}
+      {selectedCard ? (
         <div className="offer-section">
           {selectedPvrOffers.length > 0 && (
             <div className="offer-container">
               <h2>PVR Offers</h2>
-              <div className="offer-row">
-                {selectedPvrOffers.map((offer, index) => (
-                  <div key={index} className="offer-card">
-                    <img src={offer.Image} alt={offer.Title} />
-                    <h3>{offer.Title}</h3>
-                    <p>
-                      <strong>Validity:</strong> {offer.Validity}
-                    </p>
-                    <button
-                      onClick={() => openTermsOverlay(offer.Offers, index)}
-                    >
-                      Click For More Details
-                    </button>
-                  </div>
-                ))}
-              </div>
+              {/* Offers rendering */}
             </div>
           )}
-
-          {/* Add similar blocks for Inox and BookMyShow offers */}
+          {selectedInoxOffers.length > 0 && (
+            <div className="offer-container">
+              <h2>Inox Offers</h2>
+              {/* Offers rendering */}
+            </div>
+          )}
+          {selectedBookMyShowOffers.length > 0 && (
+            <div className="offer-container">
+              <h2>Book My Show Offers</h2>
+              {/* Offers rendering */}
+            </div>
+          )}
         </div>
-      )}
+      ) : noOffersMessage ? (
+        <p style={{ textAlign: "center", marginTop: "20px" }}>
+          No offers applicable at the moment
+        </p>
+      ) : null}
 
       {/* Terms Modal */}
       {showTermsIndex !== null && (
