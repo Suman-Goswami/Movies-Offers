@@ -96,7 +96,7 @@ const CreditCardDropdown = () => {
 
   return (
     <div className="App" style={{ fontFamily: "'Libre Baskerville', serif" }}>
-      <h1>Movies Offers - Linked to your Credit Card</h1>
+      <h1>Movies Offers</h1>
       <div
         className="creditCardDropdown"
          style={{ position: "relative", width: "600px", margin: "0 auto" }}
@@ -157,7 +157,7 @@ const CreditCardDropdown = () => {
       </div>
 
       {noOffersMessage && (
-        <p style={{ color: "red", textAlign: "center" }}>
+        <p style={{ color: "black", textAlign: "center" , marginTop: "20px"}}>
           No offers available for the entered credit card.
         </p>
       )}
